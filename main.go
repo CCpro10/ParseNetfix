@@ -3,18 +3,22 @@ package main
 import (
 	"fmt"
 	"log"
-	"main/util"
+	"main/service"
+	"os"
 )
 
 func main() {
-	util.InitCmsMap()
+	//设置网络代理
+	os.Setenv("HTTP_PROXY", "127.0.0.1:19180")
+	os.Setenv("HTTPS_PROXY", "127.0.0.1:19180")
+	service.InitCmsMap()
 	//由于网络原因,Fetch很可能是不成功的
 	fullUrl := "https://www.netflix.com/title/80168230"
-	body, err := util.Fetch(fullUrl)
+	body, err := service.Fetch(fullUrl)
 
 	CheckErrLogIfNotNil(err)
 
-	cms, err := util.ParseDetail(util.CmsMap, body)
+	cms, err := service.ParseDetail(service.CmsMap, body)
 	CheckErrLogIfNotNil(err)
 	fmt.Println(cms)
 
