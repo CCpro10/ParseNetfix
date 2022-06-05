@@ -13,6 +13,6 @@ func TestParseDetail(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	log.Printf("%v\n", cms)
+	log.Printf("%v\n", *cms)
 	log.Printf("%+v\n", cms.Region2Language)
 }

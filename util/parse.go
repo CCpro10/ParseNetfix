@@ -35,7 +35,6 @@ func InitCmsMap() {
 	CmsMap = make(CompactMsMap)
 }
 
-//url like "https://www.netflix.com/title/80168230"
 // ParseDetail parses one movie subject metadata
 func ParseDetail(CmsMap CompactMsMap, body []byte) (rs *CompactMs, err error) {
 	//<p class="footer-country">Netflix Singapore</p>    					   定位country
@@ -83,11 +82,12 @@ func ParseDetail(CmsMap CompactMsMap, body []byte) (rs *CompactMs, err error) {
 			Region2Language: make(map[string]LanguageMsg),
 		}
 		CmsMap[id] = cms
+
+		//Cms 标题
+		i = strings.Index(mes, "<h1 class=\"title-title\" data-uia=\"title-info-title\">")
+		j = strings.Index(mes[i:], "</h1>")
+		cms.Title = mes[i+len("<h1 class=\"title-title\" data-uia=\"title-info-title\">") : i+j]
 	}
-	//Cms 标题
-	i = strings.Index(mes, "<h1 class=\"title-title\" data-uia=\"title-info-title\">")
-	j = strings.Index(mes[i:], "</h1>")
-	cms.Title = mes[i+len("<h1 class=\"title-title\" data-uia=\"title-info-title\">") : i+j]
 
 	//cms 增加地区
 	i = strings.Index(mes, "<p class=\"footer-country\">Netflix")
@@ -96,13 +96,14 @@ func ParseDetail(CmsMap CompactMsMap, body []byte) (rs *CompactMs, err error) {
 	cms.Regions = append(cms.Regions, region)
 
 	//获取Cms 的language信息
-	var langMsg LanguageMsg
-	langMsg.Audios = []string{}
-	langMsg.Subtitles = []string{}
+	var langMsg = LanguageMsg{
+		[]string{},
+		[]string{},
+	}
 
 	findAllAudio := false
 	m1 := mes
-	for !findAllAudio {
+	for !findAllAudio { //循环查找,直到找到所有的Audio
 		i = strings.Index(m1, "data-uia=\"more-details-item-audio\">")
 		j = strings.Index(m1[i:], "<")
 		audio := m1[i+len("data-uia=\"more-details-item-audio\">") : i+j]
