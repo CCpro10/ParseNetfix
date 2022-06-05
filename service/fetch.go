@@ -3,7 +3,6 @@ package service
 import (
 	"errors"
 	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -24,8 +23,6 @@ func Fetch(fullUrl string) (rs []byte, err error) {
 		return []byte{}, err
 	}
 	defer resp.Body.Close()
-
-	log.Printf("%+v", resp)
 
 	rs, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
